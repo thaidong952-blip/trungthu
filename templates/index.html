@@ -96,7 +96,11 @@
 
     <div class="container">
         <h1>Nhật Hạ trung thu vui vẻ 🌸🌸</h1>
-        <p>tặng Nhật Hạ 🥮 nhân... dịp này thì "trăng đêm nay đẹp lắm" 🌙</p>
+        <p>
+        tặng Nhật Hạ 🥮 nhân...<br>
+        cơ hội này thì "trăng đêm nay đẹp lắm" =)) 🌙
+        </p>
+
     </div>
 
     <script>
@@ -205,20 +209,27 @@
             }
         }
 
-        function createFirework(x, y) {
-            for (let i = 0; i < 20; i++) {
-                const angle = (i / 20) * Math.PI * 2;
-                const speed = Math.random() * 5 + 2;
-                particles.push(new Particle(
-                    x, y,
-                    Math.cos(angle) * speed,
-                    Math.sin(angle) * speed,
-                    `hsl(${Math.random() * 60 + 20}, 100%, 50%)`,
-                    Math.random() * 3 + 1,
-                    60
-                ));
-            }
-        }
+       initStars();
+animate();
+
+// 🎇 Bắn pháo hoa ngay khi mở trang — 5 lần liên tiếp
+for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+        createFirework(
+            Math.random() * window.innerWidth,
+            Math.random() * window.innerHeight * 0.5
+        );
+    }, i * 700); // mỗi lần cách nhau 0.7 giây
+}
+
+// 🚀 Bắn thêm 1 quả ở giữa ngay lập tức (hiệu ứng nổi bật ban đầu)
+createFirework(window.innerWidth / 2, window.innerHeight / 2);
+
+// ✅ Giữ nguyên để pháo hoa vẫn bắn ngẫu nhiên về sau
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 
         function animate() {
             ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
