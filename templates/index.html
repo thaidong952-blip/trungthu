@@ -28,23 +28,44 @@
             z-index: 10;
             position: relative;
             animation: fadeInUp 2s ease-out;
+            max-width: 90%;
         }
         h1 {
-            font-size: 4em;
+            font-size: 2.5em; /* Giảm từ 4em xuống 2.5em */
             background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4ecdc4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 0;
+            margin: 0 0 15px 0;
             text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .name-with-image {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .person-small-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffd93d;
+            box-shadow: 0 0 15px rgba(255, 217, 61, 0.7);
         }
         p {
-            font-size: 1.8em;
+            font-size: 2.2em; /* Tăng từ 1.8em lên 2.2em */
             color: #e0e0e0;
-            margin: 20px 0;
+            margin: 25px 0;
             opacity: 0;
             animation: fadeInUp 2s ease-out 0.5s forwards;
+            line-height: 1.4;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
         .moon {
             position: absolute;
@@ -87,15 +108,48 @@
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(5deg); }
         }
+
+        /* Thêm responsive cho mobile */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+                flex-direction: column;
+            }
+            p {
+                font-size: 1.8em;
+            }
+            .person-small-img {
+                width: 40px;
+                height: 40px;
+            }
+            .moon {
+                width: 100px;
+                height: 100px;
+                top: 15%;
+                right: 5%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6em;
+            }
+            p {
+                font-size: 1.4em;
+            }
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
     <div class="moon"></div>
     <div class="container">
-        <h1>Chúc Mừng Trung Thu! Nhật Hạ 🌸🌸✨</h1>
-        <img src="hạ.jpg" alt="Hình ảnh Nhật Hạ">
-        <p>tặng Nhật Hạ 🥮 nhân ....dịp này thì "trăng đêm nay đẹp lắm" 🌙 </p>
+        <h1>
+            <span>Nhật Hạ</span>
+            <img src="hạ.jpg" alt="Nhật Hạ" class="person-small-img" onerror="this.src='https://via.placeholder.com/50x50/ffd93d/000?text=H'">
+            <span>trung thu vui vẻ 🌸🌸✨</span>
+        </h1>
+        <p>tặng Nhật Hạ 🥮 nhân ....dịp này thì "trăng đêm nay đẹp lắm" 🌙</p>
     </div>
 
     <script>
