@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chúc Mừng Trung Thu! 🌕</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            position: relative;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            animation: fadeInUp 2s ease-out;
+        }
+        h1 {
+            font-size: 4em;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        p {
+            font-size: 1.8em;
+            color: #e0e0e0;
+            margin: 20px 0;
+            opacity: 0;
+            animation: fadeInUp 2s ease-out 0.5s forwards;
+        }
+        .moon {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #fff 40%, #f0f0f0 70%, #e0e0e0 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+            z-index: 5;
+            animation: floatMoon 6s ease-in-out infinite;
+        }
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 60px;
+            height: 60px;
+            background: #16213e;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px #ff6b6b); }
+            to { filter: drop-shadow(0 0 30px #ffd93d); }
+        }
+        @keyframes floatMoon {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="moon"></div>
+    <div class="container">
+        <h1>Chúc Mừng Trung Thu! 🥮✨</h1>
+        <p>Hương bánh ngọt ngào, trăng sáng vằng vặc... Yêu thương gửi đến bạn mãi mãi! 💕🌸</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        let stars = [];
+        let hearts = [];
+
+        class Particle {
+            constructor(x, y, vx, vy, color, size, life) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.size = size;
+                this.life = life;
+                this.maxLife = life;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // gravity
+                this.life--;
+                this.size *= 0.99;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / this.maxLife;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class HeartParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = Math.random() * -3;
+                this.angle = 0;
+                this.life = 100;
+                this.maxLife = 100;
+                this.size = Math.random() * 5 + 5;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.05;
+                this.angle += 0.1;
+                this.x += Math.sin(this.angle) * 0.5;
+                this.life--;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / this.maxLife;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = '#ff69b4';
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size);
+                ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, 0, 0, this.size / 2);
+                ctx.bezierCurveTo(this.size, 0, this.size, -this.size / 2, 0, -this.size);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height * 0.5;
+                this.size = Math.random() * 3 + 1;
+                this.twinkle = Math.random() * 255;
+            }
+            update() {
+                this.twinkle += (Math.random() - 0.5) * 2;
+                this.twinkle = Math.max(0, Math.min(255, this.twinkle));
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.twinkle / 255 * 0.8;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.size);
+                for (let i = 0; i < 5; i++) {
+                    ctx.lineTo(this.x + Math.cos((i * 4 * Math.PI / 5) - Math.PI / 2) * this.size, this.y + Math.sin((i * 4 * Math.PI / 5) - Math.PI / 2) * this.size);
+                    ctx.lineTo(this.x + Math.cos((i * 4 * Math.PI / 5) + Math.PI / 2) * (this.size / 2), this.y + Math.sin((i * 4 * Math.PI / 5) + Math.PI / 2) * (this.size / 2));
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initStars() {
+            for (let i = 0; i < 100; i++) {
+                stars.push(new Star());
+            }
+        }
+
+        function createFirework(x, y) {
+            for (let i = 0; i < 20; i++) {
+                const angle = (i / 20) * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                particles.push(new Particle(
+                    x, y,
+                    Math.cos(angle) * speed,
+                    Math.sin(angle) * speed,
+                    `hsl(${Math.random() * 60 + 20}, 100%, 50%)`,
+                    Math.random() * 3 + 1,
+                    60
+                ));
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+
+            particles = particles.filter(p => p.life > 0);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            hearts = hearts.filter(h => h.life > 0);
+            hearts.forEach(h => {
+                h.update();
+                h.draw();
+            });
+
+            if (Math.random() < 0.02) createFirework(Math.random() * canvas.width, canvas.height * 0.3);
+            if (Math.random() < 0.01) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height));
+
+            requestAnimationFrame(animate);
+        }
+
+        initStars();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
