@@ -211,25 +211,80 @@
 
        initStars();
 animate();
-
-// 🎇 Bắn pháo hoa ngay khi mở trang — 5 lần liên tiếp
-for (let i = 0; i < 5; i++) {
-    setTimeout(() => {
-        createFirework(
-            Math.random() * window.innerWidth,
-            Math.random() * window.innerHeight * 0.5
-        );
-    }, i * 700); // mỗi lần cách nhau 0.7 giây
+function initStars() {
+    for (let i = 0; i < 100; i++) {
+        stars.push(new Star());
+    }
 }
 
-// 🚀 Bắn thêm 1 quả ở giữa ngay lập tức (hiệu ứng nổi bật ban đầu)
-createFirework(window.innerWidth / 2, window.innerHeight / 2);
+function createFirework(x, y) {
+    for (let i = 0; i < 20; i++) {
+        const angle = (i / 20) * Math.PI * 2;
+        const speed = Math.random() * 5 + 2;
+        particles.push(new Particle(
+            x, y,
+            Math.cos(angle) * speed,
+            Math.sin(angle) * speed,
+            `hsl(${Math.random() * 60 + 20}, 100%, 50%)`,
+            Math.random() * 3 + 1,
+            60
+        ));
+    }
+}
 
-// ✅ Giữ nguyên để pháo hoa vẫn bắn ngẫu nhiên về sau
+function animate() {
+    ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    stars.forEach(star => {
+        star.update();
+        star.draw();
+    });
+
+    particles = particles.filter(p => p.life > 0);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+
+    hearts = hearts.filter(h => h.life > 0);
+    hearts.forEach(h => {
+        h.update();
+        h.draw();
+    });
+
+    // Giữ hiệu ứng ngẫu nhiên ban đầu
+    if (Math.random() < 0.02) createFirework(Math.random() * canvas.width, canvas.height * 0.3);
+    if (Math.random() < 0.01) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height));
+
+    requestAnimationFrame(animate);
+}
+
+// 🌟 Gọi khi vừa load xong tất cả
+window.addEventListener("load", () => {
+    initStars();
+    animate();
+
+    // 🚀 Pháo hoa bắn ngay khi mở trang
+    createFirework(window.innerWidth / 2, window.innerHeight / 2);
+
+    // 🎆 Bắn thêm 5 lần liên tiếp sau đó
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            createFirework(
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerHeight * 0.5
+            );
+        }, i * 700);
+    }
+});
+
+// 🔄 Canvas resize cho vừa màn hình
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 });
+
 
         function animate() {
             ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
