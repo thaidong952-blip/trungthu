@@ -8,7 +8,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #000428 0%, #004e92 50%, #000428 100%); /* Đêm trăng huyền bí: Xanh đen với gradient tối */
+            background: linear-gradient(135deg, #000428 0%, #004e92 50%, #000428 100%); /* Đêm trăng huyền bí */
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -40,20 +40,21 @@
             animation: glow 2s ease-in-out infinite alternate;
         }
         .cake-img {
-            width: 150px; /* Kích thước hình bánh */
+            width: 180px; /* Tăng kích thước để nổi bật */
             height: auto;
-            margin: 20px 0;
-            border-radius: 50%; /* Làm tròn hình bánh */
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); /* Glow vàng quanh bánh */
+            margin: 40px 0; /* Tăng margin để không chèn chữ */
+            border-radius: 50%; /* Tròn */
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); /* Glow vàng mạnh hơn */
             animation: float 3s ease-in-out infinite;
+            z-index: 11; /* Nổi trên chữ */
         }
         p {
-            font-size: 1.5em;
+            font-size: 2.5em; /* To hơn, dễ đọc */
             color: #e0e0e0;
-            margin: 10px 0;
+            margin: 20px 0;
             opacity: 0;
             animation: fadeInUp 2s ease-out 0.5s forwards;
-            font-style: italic; /* Nghiêng cho lãng mạn */
+            font-style: italic;
         }
         .moon {
             position: absolute;
@@ -63,7 +64,7 @@
             height: 200px;
             background: radial-gradient(circle, #fff 30%, #f0f0f0 60%, #e0e0e0 100%);
             border-radius: 50%;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 100px rgba(255, 215, 0, 0.3); /* Glow trắng-vàng trăng */
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 100px rgba(255, 215, 0, 0.3);
             z-index: 5;
             animation: floatMoon 6s ease-in-out infinite;
         }
@@ -77,6 +78,48 @@
             background: #000428;
             border-radius: 50%;
             opacity: 0.3;
+        }
+        .lantern { /* Đèn lồng bên trái */
+            position: absolute;
+            left: 5%;
+            bottom: 20%;
+            width: 80px;
+            height: 120px;
+            background: radial-gradient(circle, #ff4500 20%, #ff6347 70%, #8b0000 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+            animation: sway 4s ease-in-out infinite;
+        }
+        .lantern::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: #8b4513;
+            transform: translateX(-50%);
+        }
+        .lantern-right { /* Đèn lồng bên phải */
+            position: absolute;
+            right: 5%;
+            bottom: 10%;
+            width: 60px;
+            height: 90px;
+            background: radial-gradient(circle, #ff8c00 20%, #ff6347 70%, #8b0000 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
+            animation: sway 5s ease-in-out infinite reverse;
+        }
+        .lantern-right::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            width: 1px;
+            height: 20px;
+            background: #8b4513;
+            transform: translateX(-50%);
         }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(50px); }
@@ -94,15 +137,21 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(5deg); }
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="moon"></div> <!-- Trăng sáng hơn cho background đêm -->
+    <div class="moon"></div> <!-- Trăng -->
+    <div class="lantern"></div> <!-- Đèn lồng trái -->
+    <div class="lantern-right"></div> <!-- Đèn lồng phải -->
     <div class="container">
-        <h1>Nhật Hạ trung thu vui vẻ</h1> <!-- Chữ chính glow -->
-        <img src="banh.jpeg" alt="Bánh trung thu" class="cake-img"> <!-- Hình bánh từ file của bạn -->
-        <p>tặng Hạ bánh trung thu nhân dịp này thì trăng đêm nay đẹp lắm</p> <!-- Dòng chữ lãng mạn -->
+        <h1>Nhật Hạ trung thu vui vẻ</h1>
+        <img src="banh.jpeg" alt="Bánh trung thu" class="cake-img"> <!-- Hình bánh từ templates, không chèn chữ -->
+        <p>tặng Hạ bánh trung thu nhân dịp này thì "<span style="color: #ffd93d; font-weight: bold;">trăng đêm nay đẹp lắm</span>"</p> <!-- To hơn, ngoặc kép -->
     </div>
 
     <script>
@@ -113,93 +162,37 @@
 
         let particles = [];
         let stars = [];
-        let hearts = []; // Hiệu ứng trái tim nhỏ xoay
+        let hearts = [];
+        let flowers = [];
 
-        class Particle {
-            constructor(x, y, vx, vy, color, size, life) {
-                this.x = x;
-                this.y = y;
-                this.vx = vx;
-                this.vy = vy;
-                this.color = color;
-                this.size = size;
-                this.life = life;
-                this.maxLife = life;
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.vy += 0.1;
-                this.life--;
-                this.size *= 0.99;
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.life / this.maxLife;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
+        // Giữ nguyên class Particle, Star, HeartParticle từ code cũ
 
-        class HeartParticle {
+        class FlowerParticle {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 2; // Chậm hơn cho xoay mượt
-                this.vy = Math.random() * -2; // Bay lên chậm
-                this.angle = 0; // Góc xoay
-                this.life = 150; // Sống lâu hơn
-                this.maxLife = 150;
-                this.size = Math.random() * 5 + 3; // Nhỏ hơn: 3-8px
-                this.rotationSpeed = Math.random() * 0.05 + 0.02; // Tốc độ xoay
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = Math.random() * 1 + 0.5;
+                this.angle = 0;
+                this.life = 200;
+                this.maxLife = 200;
+                this.size = Math.random() * 4 + 2;
+                this.rotationSpeed = Math.random() * 0.03 + 0.01;
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy += 0.02; // Gravity nhẹ
-                this.angle += this.rotationSpeed; // Xoay vòng
+                this.angle += this.rotationSpeed;
                 this.life--;
             }
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.life / this.maxLife;
                 ctx.translate(this.x, this.y);
-                ctx.rotate(this.angle); // Xoay trái tim
-                ctx.fillStyle = '#ff69b4'; // Màu hồng lãng mạn
+                ctx.rotate(this.angle);
+                ctx.fillStyle = '#ff69b4';
                 ctx.beginPath();
-                ctx.moveTo(0, -this.size);
-                ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, 0, 0, this.size / 2);
-                ctx.bezierCurveTo(this.size, 0, this.size, -this.size / 2, 0, -this.size);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        class Star {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height * 0.5;
-                this.size = Math.random() * 3 + 1;
-                this.twinkle = Math.random() * 255;
-            }
-            update() {
-                this.twinkle += (Math.random() - 0.5) * 2;
-                this.twinkle = Math.max(0, Math.min(255, this.twinkle));
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.twinkle / 255 * 0.8;
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y - this.size);
-                for (let i = 0; i < 5; i++) {
-                    ctx.lineTo(this.x + Math.cos((i * 4 * Math.PI / 5) - Math.PI / 2) * this.size, this.y + Math.sin((i * 4 * Math.PI / 5) - Math.PI / 2) * this.size);
-                    ctx.lineTo(this.x + Math.cos((i * 4 * Math.PI / 5) + Math.PI / 2) * (this.size / 2), this.y + Math.sin((i * 4 * Math.PI / 5) + Math.PI / 2) * (this.size / 2));
-                }
-                ctx.closePath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
@@ -227,7 +220,7 @@
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 4, 40, 0.1)'; // Nền đêm trăng mờ
+            ctx.fillStyle = 'rgba(0, 4, 40, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             stars.forEach(star => {
@@ -247,8 +240,15 @@
                 h.draw();
             });
 
+            flowers = flowers.filter(f => f.life > 0);
+            flowers.forEach(f => {
+                f.update();
+                f.draw();
+            });
+
             if (Math.random() < 0.02) createFirework(Math.random() * canvas.width, canvas.height * 0.3);
-            if (Math.random() < 0.02) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height)); // Thêm tim thường hơn, xoay vòng
+            if (Math.random() < 0.02) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height));
+            if (Math.random() < 0.03) flowers.push(new FlowerParticle(Math.random() * canvas.width, 0));
 
             requestAnimationFrame(animate);
         }
