@@ -8,7 +8,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            background: linear-gradient(135deg, #000428 0%, #004e92 50%, #000428 100%); /* Đêm trăng huyền bí: Xanh đen với gradient tối */
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -35,26 +35,35 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 0;
+            margin: 0 0 20px 0;
             text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
         }
-        p {
-            font-size: 1.8em;
-            color: #e0e0e0;
+        .cake-img {
+            width: 150px; /* Kích thước hình bánh */
+            height: auto;
             margin: 20px 0;
+            border-radius: 50%; /* Làm tròn hình bánh */
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); /* Glow vàng quanh bánh */
+            animation: float 3s ease-in-out infinite;
+        }
+        p {
+            font-size: 1.5em;
+            color: #e0e0e0;
+            margin: 10px 0;
             opacity: 0;
             animation: fadeInUp 2s ease-out 0.5s forwards;
+            font-style: italic; /* Nghiêng cho lãng mạn */
         }
         .moon {
             position: absolute;
-            top: 20%;
-            right: 10%;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, #fff 40%, #f0f0f0 70%, #e0e0e0 100%);
+            top: 10%;
+            right: 5%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #fff 30%, #f0f0f0 60%, #e0e0e0 100%);
             border-radius: 50%;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 100px rgba(255, 215, 0, 0.3); /* Glow trắng-vàng trăng */
             z-index: 5;
             animation: floatMoon 6s ease-in-out infinite;
         }
@@ -63,21 +72,15 @@
             position: absolute;
             top: 20%;
             left: 20%;
-            width: 60px;
-            height: 60px;
-            background: #16213e;
+            width: 80px;
+            height: 80px;
+            background: #000428;
             border-radius: 50%;
             opacity: 0.3;
         }
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes glow {
             from { filter: drop-shadow(0 0 20px #ff6b6b); }
@@ -87,14 +90,19 @@
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(5deg); }
         }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="moon"></div>
+    <div class="moon"></div> <!-- Trăng sáng hơn cho background đêm -->
     <div class="container">
-        <h1>Chúc Mừng Trung Thu! 🥮✨</h1>
-        <p>Hương bánh ngọt ngào, trăng sáng vằng vặc... Yêu thương gửi đến bạn mãi mãi! 💕🌸</p>
+        <h1>Nhật Hạ trung thu vui vẻ</h1> <!-- Chữ chính glow -->
+        <img src="banh.jpeg" alt="Bánh trung thu" class="cake-img"> <!-- Hình bánh từ file của bạn -->
+        <p>tặng Hạ bánh trung thu nhân dịp này thì trăng đêm nay đẹp lắm</p> <!-- Dòng chữ lãng mạn -->
     </div>
 
     <script>
@@ -105,7 +113,7 @@
 
         let particles = [];
         let stars = [];
-        let hearts = [];
+        let hearts = []; // Hiệu ứng trái tim nhỏ xoay
 
         class Particle {
             constructor(x, y, vx, vy, color, size, life) {
@@ -121,7 +129,7 @@
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy += 0.1; // gravity
+                this.vy += 0.1;
                 this.life--;
                 this.size *= 0.99;
             }
@@ -140,27 +148,27 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 4;
-                this.vy = Math.random() * -3;
-                this.angle = 0;
-                this.life = 100;
-                this.maxLife = 100;
-                this.size = Math.random() * 5 + 5;
+                this.vx = (Math.random() - 0.5) * 2; // Chậm hơn cho xoay mượt
+                this.vy = Math.random() * -2; // Bay lên chậm
+                this.angle = 0; // Góc xoay
+                this.life = 150; // Sống lâu hơn
+                this.maxLife = 150;
+                this.size = Math.random() * 5 + 3; // Nhỏ hơn: 3-8px
+                this.rotationSpeed = Math.random() * 0.05 + 0.02; // Tốc độ xoay
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy += 0.05;
-                this.angle += 0.1;
-                this.x += Math.sin(this.angle) * 0.5;
+                this.vy += 0.02; // Gravity nhẹ
+                this.angle += this.rotationSpeed; // Xoay vòng
                 this.life--;
             }
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.life / this.maxLife;
                 ctx.translate(this.x, this.y);
-                ctx.rotate(this.angle);
-                ctx.fillStyle = '#ff69b4';
+                ctx.rotate(this.angle); // Xoay trái tim
+                ctx.fillStyle = '#ff69b4'; // Màu hồng lãng mạn
                 ctx.beginPath();
                 ctx.moveTo(0, -this.size);
                 ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, 0, 0, this.size / 2);
@@ -219,7 +227,7 @@
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
+            ctx.fillStyle = 'rgba(0, 4, 40, 0.1)'; // Nền đêm trăng mờ
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             stars.forEach(star => {
@@ -240,7 +248,7 @@
             });
 
             if (Math.random() < 0.02) createFirework(Math.random() * canvas.width, canvas.height * 0.3);
-            if (Math.random() < 0.01) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height));
+            if (Math.random() < 0.02) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height)); // Thêm tim thường hơn, xoay vòng
 
             requestAnimationFrame(animate);
         }
