@@ -8,7 +8,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #000428 0%, #004e92 50%, #000428 100%); /* Đêm trăng huyền bí */
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%); /* Đêm trăng gốc, hơi tối hơn */
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -40,18 +40,18 @@
             animation: glow 2s ease-in-out infinite alternate;
         }
         .cake-img {
-            width: 180px; /* Tăng kích thước để nổi bật */
+            width: 150px;
             height: auto;
-            margin: 40px 0; /* Tăng margin để không chèn chữ */
-            border-radius: 50%; /* Tròn */
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); /* Glow vàng mạnh hơn */
+            margin: 30px 0;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
             animation: float 3s ease-in-out infinite;
-            z-index: 11; /* Nổi trên chữ */
+            z-index: 11;
         }
         p {
-            font-size: 2.5em; /* To hơn, dễ đọc */
+            font-size: 2em;
             color: #e0e0e0;
-            margin: 20px 0;
+            margin: 10px 0;
             opacity: 0;
             animation: fadeInUp 2s ease-out 0.5s forwards;
             font-style: italic;
@@ -75,7 +75,7 @@
             left: 20%;
             width: 80px;
             height: 80px;
-            background: #000428;
+            background: #0c0c0c;
             border-radius: 50%;
             opacity: 0.3;
         }
@@ -145,13 +145,13 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div class="moon"></div> <!-- Trăng -->
-    <div class="lantern"></div> <!-- Đèn lồng trái -->
-    <div class="lantern-right"></div> <!-- Đèn lồng phải -->
+    <div class="moon"></div>
+    <div class="lantern"></div>
+    <div class="lantern-right"></div>
     <div class="container">
         <h1>Nhật Hạ trung thu vui vẻ</h1>
-        <img src="banh.jpeg" alt="Bánh trung thu" class="cake-img"> <!-- Hình bánh từ templates, không chèn chữ -->
-        <p>tặng Hạ bánh trung thu nhân dịp này thì "<span style="color: #ffd93d; font-weight: bold;">trăng đêm nay đẹp lắm</span>"</p> <!-- To hơn, ngoặc kép -->
+        <img src="banh.jpeg" alt="Bánh trung thu" class="cake-img">
+        <p>tặng Hạ bánh trung thu nhân dịp này thì "<span style="color: #ffd93d; font-weight: bold;">trăng đêm nay đẹp lắm</span>"</p>
     </div>
 
     <script>
@@ -165,19 +165,107 @@
         let hearts = [];
         let flowers = [];
 
-        // Giữ nguyên class Particle, Star, HeartParticle từ code cũ
+        class Particle {
+            constructor(x, y, vx, vy, color, size, life) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.size = size;
+                this.life = life;
+                this.maxLife = life;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1;
+                this.life--;
+                this.size *= 0.99;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / this.maxLife;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class HeartParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 1; // Chậm hơn
+                this.vy = Math.random() * -1; // Bay lên chậm
+                this.angle = 0;
+                this.life = 200; // Sống lâu hơn
+                this.maxLife = 200;
+                this.size = Math.random() * 5 + 3;
+                this.rotationSpeed = Math.random() * 0.03 + 0.01; // Xoay chậm
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.03; // Gravity chậm
+                this.angle += this.rotationSpeed;
+                this.life--;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / this.maxLife;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = '#ff69b4';
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size);
+                ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, 0, 0, this.size / 2);
+                ctx.bezierCurveTo(this.size, 0, this.size, -this.size / 2, 0, -this.size);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height * 0.5;
+                this.size = Math.random() * 3 + 1;
+                this.twinkle = Math.random() * 255;
+            }
+            update() {
+                this.twinkle += (Math.random() - 0.5) * 2;
+                this.twinkle = Math.max(0, Math.min(255, this.twinkle));
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.twinkle / 255 * 0.8;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.size);
+                for (let i = 0; i < 5; i++) {
+                    ctx.lineTo(this.x + Math.cos((i * 4 * Math.PI / 5) - Math.PI / 2) * this.size, this.y + Math.sin((i * 4 * Math.PI / 5) - Math.PI / 2) * this.size);
+                    ctx.lineTo(this.x + Math.cos((i * 4 * Math.PI / 5) + Math.PI / 2) * (this.size / 2), this.y + Math.sin((i * 4 * Math.PI / 5) + Math.PI / 2) * (this.size / 2));
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
         class FlowerParticle {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 1;
-                this.vy = Math.random() * 1 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.5; // Chậm
+                this.vy = Math.random() * 0.5 + 0.2; // Rơi chậm
                 this.angle = 0;
-                this.life = 200;
-                this.maxLife = 200;
-                this.size = Math.random() * 4 + 2;
-                this.rotationSpeed = Math.random() * 0.03 + 0.01;
+                this.life = 300; // Lâu hơn
+                this.maxLife = 300;
+                this.size = Math.random() * 3 + 1; // Nhỏ
+                this.rotationSpeed = Math.random() * 0.02 + 0.01;
             }
             update() {
                 this.x += this.vx;
@@ -220,7 +308,7 @@
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 4, 40, 0.1)';
+            ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             stars.forEach(star => {
@@ -247,8 +335,8 @@
             });
 
             if (Math.random() < 0.02) createFirework(Math.random() * canvas.width, canvas.height * 0.3);
-            if (Math.random() < 0.02) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height));
-            if (Math.random() < 0.03) flowers.push(new FlowerParticle(Math.random() * canvas.width, 0));
+            if (Math.random() < 0.01) hearts.push(new HeartParticle(Math.random() * canvas.width, canvas.height)); // Ít tim hơn, chậm
+            if (Math.random() < 0.01) flowers.push(new FlowerParticle(Math.random() * canvas.width, 0)); // Ít hoa hơn, chậm
 
             requestAnimationFrame(animate);
         }
