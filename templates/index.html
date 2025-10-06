@@ -69,7 +69,12 @@
             border-radius: 50%;
             opacity: 0.3;
         }    
-    
+        .pink {
+          background: none;
+          -webkit-text-fill-color: #ff69b4; /* hồng */
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.7);
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -95,7 +100,7 @@
     <div class="moon"></div>
 
     <div class="container">
-        <h1>Nhật Hạ trung thu vui vẻ 🌸🌸</h1>
+        <h1>Nhật Hạ trung thu vui vẻ <span class="pink">🌸🌸</span></h1>
         <p>
         tặng Nhật Hạ 🥮 nhân...<br>
         cơ hội này thì "trăng đêm nay đẹp lắm" =)) 🌙
@@ -220,7 +225,7 @@ function initStars() {
 function createFirework(x, y) {
     for (let i = 0; i < 20; i++) {
         const angle = (i / 20) * Math.PI * 2;
-        const speed = Math.random() * 5 + 2;
+        const speed = Math.random() * 8 + 4;
         particles.push(new Particle(
             x, y,
             Math.cos(angle) * speed,
